@@ -172,3 +172,90 @@ c_sal_plot<- c_sal_plot +
         axis.text = element_text(colour = "black", size = rel(1))) +
   geom_point(data = saline_c_res.47_mean)
   
+
+# ENU individual graph
+
+c_enu_plot <- ggplot(ENU_c_res.47_mean, aes(x= factor(Diet, levels = order_diet), y = MF, fill= Diet)) + 
+  geom_boxplot(colour= "#948d88", fatten = 1, coef = NULL) + #Take the NULL= normal lines of error
+  scale_fill_manual(breaks = c("Deficient", "Control", "Supplemented"), 
+                    values = c("#68D6E4", "#fc9399", "#f2ae8b"))
+
+
+c_enu_plot<- c_enu_plot + 
+  scale_x_discrete(name = "Diets") + 
+  scale_y_continuous(name = "Mutant Frequency\n(10^-5)") +
+  ggtitle("Mutant Frequency of Colonic Tissue
+          in ENU Treatment") +
+  theme_bw() + 
+  theme(axis.title = element_text(face = 'bold', size = 13, hjust = 0.5),
+        axis.title.y = element_text(vjust = 2),
+        strip.text.y = element_text(size=10, face = 'bold'),
+        plot.title = element_text(vjust = 2, hjust = 0.5, face="bold"),
+        legend.position="none",
+        axis.text = element_text(colour = "black", size = rel(1))) +
+  geom_point(data = ENU_c_res.47_mean)
+
+pdf('ENU Colon Final plot.pdf')
+c_enu_plot
+dev.off()
+
+
+
+#============ Tissue Comparison graphs (BM sample 54 removed)=========
+
+tissues_df <- read_excel("~/Documents/1st Year/Main Colon LacZ PFUs ,mutant plaques 3.xlsx", 
+                         sheet = "C+BM+S")
+
+# Subsetting by treatment
+
+saline_tissues<- subset(tissues_df, Treatment == 'Saline')
+ENU_tissues<- subset(tissues_df, Treatment == 'ENU')
+
+
+tissues_df$Treat_order = factor(tissues_df$Treatment,levels = c('Saline','ENU'))
+
+tissues_plot <- ggplot(tissues_df, aes(x= factor(Diet, levels = order_diet), y = MF )) + 
+  geom_boxplot(fill="paleturquoise", colour="cornsilk4",
+               outlier.size = 0, fatten=1)
+tissues_plot<- tissues_plot + 
+  stat_boxplot(geom ='errorbar', width = 0.2, size=0.3) +
+  scale_x_discrete(name = " Folic Acid Diets") + 
+  scale_y_continuous(name = "Mutant Frequency\n(10^-5)") +
+  ggtitle("Mutant Frequency of Tissues") +
+  theme_bw() + 
+  theme(axis.title = element_text(face = 'bold', size = 13, hjust = 0.5),
+        axis.title.y = element_text(vjust = 1),
+        axis.title.x = element_text(vjust = 1),
+        axis.text.x = element_text(angle = 30, hjust = 0.9),
+        strip.text.y = element_text(size=9, face = 'bold'),
+        strip.text.x = element_text(size = 9, face = "bold"),
+        plot.title = element_text(face= 'bold',vjust = 2, hjust = 0.5)) +
+  facet_grid(Treat_order~Tissue, scales = "free") +
+  geom_point(data = tissues_df) 
+
+pdf('Tissues comparison plot.pdf')
+tissues_plot
+dev.off()
+
+
+# ----Stats of BM and Sperm -----
+
+# BM
+
+bm_df <- read_excel("~/Documents/1st Year/Main Colon LacZ PFUs ,mutant plaques 3.xlsx", 
+                           sheet = "BM")
+bm_saline <- subset(bm_df, Treatment == 'Saline')
+bm_enu <- subset(bm_df, Treatment == 'ENU')  
+
+pairwise.t.test(bm_saline$MF, bm_saline$Diet, p.adjust.method = 'bonf') #Saline
+pairwise.t.test(bm_enu$MF, bm_enu$Diet, p.adjust.method = 'bonf') #ENU
+
+# Sperm
+
+sp_df <- read_excel("~/Documents/1st Year/Main Colon LacZ PFUs ,mutant plaques 3.xlsx", 
+                    sheet = "Sperm")
+sp_saline <- subset(sp_df, Treatment == 'Saline')
+sp_enu <- subset(sp_df, Treatment == 'ENU')  
+
+pairwise.t.test(sp_saline$MF, sp_saline$Diet, p.adjust.method = 'bonf') #Saline
+pairwise.t.test(sp_enu$MF, sp_enu$Diet, p.adjust.method = 'bonf') #ENU
