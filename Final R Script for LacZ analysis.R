@@ -146,9 +146,9 @@ pairwise.t.test(saline_c_resid_mean$MF, saline_c_resid_mean$Diet, p.adjust.metho
 #ENU
 pairwise.t.test(ENU_c_resid_mean$MF, ENU_c_resid_mean$Diet, p.adjust.method = 'holm')
 
-
-
 #----PLots  Saline and ENU Separate (No 47)----
+
+order_diet <- c('Deficient','Control','Supplemented')  #order x-axis
 
 
 # SALINE individual plot
@@ -161,17 +161,21 @@ c_sal_plot <- ggplot(saline_c_res.47_mean, aes(x= factor(Diet, levels = order_di
 c_sal_plot<- c_sal_plot + 
   scale_x_discrete(name = "Diets") + 
   scale_y_continuous(name = "Mutant Frequency\n(10^-5)") +
-  ggtitle("Mutant Frequency of Colonic Tissue
-          In saline Treatmnet") +
-  theme_bw() + 
+  #ggtitle("Mutant Frequency of Colonic Tissuein Saline Treatment") +
+  theme_classic() + 
   theme(axis.title = element_text(face = 'bold', size = 13, hjust = 0.5),
-        axis.title.y = element_text(vjust = 2),
+        axis.title.y = element_text(vjust = 2, margin = unit(c(0, 3, 0, 0), "mm")),
+        axis.title.x = element_text(vjust = 0, margin = unit(c(3, 0, 0, 0), "mm")),
         strip.text.y = element_text(size=10, face = 'bold'),
         plot.title = element_text(vjust = 2, hjust = 0.5, face="bold"),
         legend.position="none",
         axis.text = element_text(colour = "black", size = rel(1))) +
-  geom_point(data = saline_c_res.47_mean)
+  geom_point(data = saline_c_res.47_mean, size= 1.5, colour = '#202020') 
   
+
+pdf('Saline Colon Final plot.pdf')
+c_sal_plot
+dev.off()
 
 # ENU individual graph
 
@@ -184,22 +188,20 @@ c_enu_plot <- ggplot(ENU_c_res.47_mean, aes(x= factor(Diet, levels = order_diet)
 c_enu_plot<- c_enu_plot + 
   scale_x_discrete(name = "Diets") + 
   scale_y_continuous(name = "Mutant Frequency\n(10^-5)") +
-  ggtitle("Mutant Frequency of Colonic Tissue
-          in ENU Treatment") +
-  theme_bw() + 
+  #ggtitle("Mutant Frequency of Colonic Tissue in ENU Treatment") +
+  theme_classic() + 
   theme(axis.title = element_text(face = 'bold', size = 13, hjust = 0.5),
-        axis.title.y = element_text(vjust = 2),
+        axis.title.y = element_text(vjust = 2, margin = unit(c(0, 3, 0, 0), "mm")),
+        axis.title.x = element_text(vjust = 0, margin = unit(c(3, 0, 0, 0), "mm")),
         strip.text.y = element_text(size=10, face = 'bold'),
         plot.title = element_text(vjust = 2, hjust = 0.5, face="bold"),
         legend.position="none",
         axis.text = element_text(colour = "black", size = rel(1))) +
-  geom_point(data = ENU_c_res.47_mean)
+  geom_point(data = ENU_c_res.47_mean, size= 1.5, colour = '#202020')
 
 pdf('ENU Colon Final plot.pdf')
 c_enu_plot
 dev.off()
-
-
 
 #============ Tissue Comparison graphs =========
 
@@ -225,22 +227,23 @@ tissues_plot<- tissues_plot +
   ggtitle("Mutant Frequency of Tissues") +
   theme_bw() + 
   theme(axis.title = element_text(face = 'bold', size = 13, hjust = 0.5),
-        axis.title.y = element_text(vjust = 1),
-        axis.title.x = element_text(vjust = 1),
+        axis.title.y = element_text(vjust = 1, margin = unit(c(0, 3, 0, 0), "mm")),
+        axis.title.x = element_text(vjust = 1, margin = unit(c(3, 0, 0, 0), "mm")),
         legend.position="none",
         #axis.text.x = element_text(angle = 0, hjust = 1),
         strip.text.y = element_text(size=9, face = 'bold'),
         strip.text.x = element_text(size = 9, face = "bold"),
         plot.title = element_text(face= 'bold',vjust = 2, hjust = 0.5),
-        panel.spacing = unit(1, "lines")) +
+        panel.spacing.x=unit(0.5, "lines"),panel.spacing.y=unit(0.8, "lines"),
+        axis.text = element_text(colour = "black", size = rel(1))) +
+        #panel.spacing = unit(0.5, "lines")) +
+        
   facet_grid(Treat_order~Tissue, scales = "free") +
   geom_point(data = tissues_df) 
 
 pdf('Tissues comparison plot.pdf')
 tissues_plot
 dev.off()
-
-
 
 # ----Stats of BM and Sperm -----
 
@@ -263,3 +266,26 @@ sp_enu <- subset(sp_df, Treatment == 'ENU')
 
 pairwise.t.test(sp_saline$MF, sp_saline$Diet, p.adjust.method = 'bonf') #Saline
 pairwise.t.test(sp_enu$MF, sp_enu$Diet, p.adjust.method = 'bonf') #ENU
+
+
+#====== Save graphs in Tiff -----
+
+#saline TIFF
+
+tiff("Saline Colon MF Plot.tiff", units="in", width=5, height=5, res=300)
+c_sal_plot
+dev.off()
+
+tiff("ENU Colon MF Plot.tiff", units="in", width=5, height=5, res=300)
+c_enu_plot
+dev.off()
+
+tiff("Tissues Comparison Plot.tiff", units="in", width=5, height=5, res=300)
+tissues_plot
+dev.off()
+
+
+
+
+
+
